@@ -51,8 +51,6 @@ var logCmd = &cobra.Command{
 			fmt.Printf("Error saving command: %v\n", err)
 			os.Exit(1)
 		}
-
-		fmt.Println("Command logged successfully")
 	},
 }
 
