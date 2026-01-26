@@ -27,16 +27,25 @@ Consolidate is a powerful command-line utility that automatically logs every com
 
 ### Prerequisites
 
-- Go 1.19 or later (for building from source)
-- SQLite3 development libraries (if building from source on Linux/macOS)
+- Go 1.19 or later
 
-### Option 1: Download Pre-built Binary
+### Option 1: Go Install (Recommended)
+
+Install directly from the repository:
+
+```bash
+go install github.com/khelechy/consolidate@latest
+```
+
+This will download, build, and install consolidate to your `$GOPATH/bin` or `$GOBIN`.
+
+### Option 2: Download Pre-built Binary
 
 1. Go to the [Releases](https://github.com/khelechy/consolidate/releases) page.
 2. Download the appropriate binary for your platform.
 3. Extract and place `consolidate` in your PATH.
 
-### Option 2: Build from Source
+### Option 3: Build from Source
 
 1. Clone the repository:
    ```bash
@@ -73,87 +82,61 @@ Consolidate is a powerful command-line utility that automatically logs every com
 ### Basic Commands
 
 #### Initialize Consolidate
+Initialize the database and configuration.
 ```bash
-consolidate init
+>> consolidate init
 ```
 Sets up the database and configuration files.
 
+
 #### Install Hooks
+Install shell hooks, automatically detects your shell and installs hooks for command logging.
 ```bash
-consolidate hook
+>> consolidate hook
 ```
-Automatically detects your shell and installs hooks for command logging.
+
 
 #### View History
-```bash
-consolidate history
-```
 Displays all logged commands, ordered from recent to oldest.
+```bash
+>> consolidate history
+```
+```bash
+   consolidate history --json > history.json
+```
+- Flags:
+  - `--limit int`: Maximum commands (default 100)
+  - `--json`: Output in JSON format
+
 
 #### Search History
-```bash
-consolidate search "git"
-```
 Searches for commands containing "git".
+```bash
+>> consolidate search "git"
+```
+```bash
+   consolidate search "docker.*build"
+```
+#### `consolidate search [query]`
+- Flags:
+  - `--limit int`: Maximum results (default 10)
+  - `--json`: Output in JSON format
+
 
 #### Manual Logging
+Manually log a command (useful for testing or scripting).
 ```bash
 consolidate log "echo hello world" --session mysession --cwd /home/user
 ```
-Manually log a command (useful for testing or scripting).
-
-### Command Reference
-
-#### `consolidate init`
-Initialize the database and configuration.
-
-#### `consolidate hook`
-Install shell hooks for automatic command capture.
-
-#### `consolidate log [command]`
-Log a command manually.
 - Flags:
   - `--session string`: Session ID
   - `--cwd string`: Current working directory
   - `--exit-code int`: Exit code (default 0)
   - `--metadata string`: Additional metadata
 
-#### `consolidate search [query]`
-Search command history.
-- Flags:
-  - `--limit int`: Maximum results (default 10)
-  - `--json`: Output in JSON format
-
-#### `consolidate history`
-Display command history.
-- Flags:
-  - `--limit int`: Maximum commands (default 100)
-  - `--json`: Output in JSON format
 
 #### `consolidate help [command]`
 Get help for any command.
-
-### Examples
-
-1. **Search for recent git commands:**
-   ```bash
-   consolidate search "git" --limit 5
-   ```
-
-2. **Search with regex-like patterns:**
-   ```bash
-   consolidate search "docker.*build"
-   ```
-
-3. **View last 20 commands:**
-   ```bash
-   consolidate history --limit 20
-   ```
-
-4. **Export history to JSON:**
-   ```bash
-   consolidate history --json > history.json
-   ```
 
 
 ## Configuration
