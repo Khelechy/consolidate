@@ -67,12 +67,12 @@ This will download, build, and install consolidate to your `$GOPATH/bin` or `$GO
 
 1. Initialize the database:
    ```bash
-   consolidate init
+   >> consolidate init
    ```
 
 2. Install shell hooks for automatic logging:
    ```bash
-   consolidate hook
+   >> consolidate hook
    ```
 
 3. Restart your shell or source your profile to activate hooks.
@@ -102,7 +102,7 @@ Displays all logged commands, ordered from recent to oldest.
 >> consolidate history
 ```
 ```bash
-   consolidate history --json > history.json
+>> consolidate history --json > history.json
 ```
 - Flags:
   - `--limit int`: Maximum commands (default 100)
@@ -115,7 +115,7 @@ Searches for commands containing "git".
 >> consolidate search "git"
 ```
 ```bash
-   consolidate search "docker.*build"
+>> consolidate search "docker.*build"
 ```
 #### `consolidate search [query]`
 - Flags:
@@ -126,7 +126,7 @@ Searches for commands containing "git".
 #### Manual Logging
 Manually log a command (useful for testing or scripting).
 ```bash
-consolidate log "echo hello world" --session mysession --cwd /home/user
+>> consolidate log "echo hello world" --session mysession --cwd /home/user
 ```
 - Flags:
   - `--session string`: Session ID
