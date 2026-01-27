@@ -195,5 +195,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Note**: This tool logs commands after execution to avoid interfering with command behavior. It captures the command as run, including any shell expansions.</content>
-<parameter name="filePath">c:\Users\PFY-102.PFY-102\source\repos\Mine\consodilate\README.md
+**Note**: This tool logs commands after execution to avoid interfering with command behavior. It captures the command as run, including any shell expansions.
