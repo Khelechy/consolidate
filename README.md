@@ -1,10 +1,6 @@
 # Consolidate
 
-A cross-platform CLI tool for capturing, storing, and searching command history across all CLI sessions.
-
-## Description
-
-Consolidate is a powerful command-line utility that automatically logs every command you run in your terminal, providing a searchable and persistent history. Unlike built-in shell history, Consolidate works across different shells and sessions, with advanced search capabilities and secure storage.
+Consolidate is a lightwieght cross-platform command-line utility that automatically logs every command you run in your terminal, providing a searchable and persistent history. Unlike built-in shell history, Consolidate works across different shells and sessions, with advanced search capabilities and secure storage.
 
 ## Use Cases
 
@@ -22,6 +18,8 @@ Consolidate is a powerful command-line utility that automatically logs every com
 - **CLI Interface**: Simple commands for logging, searching, and managing history.
 - **JSON Export**: Export history for analysis or backup.
 - **Session Tracking**: Associates commands with sessions, working directories, and exit codes.
+
+**Note**: This tool logs commands after execution to avoid interfering with command behavior. It captures the command as run, including any shell expansions.
 
 ## Installation
 
@@ -194,5 +192,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Discussions: [GitHub Discussions](https://github.com/khelechy/consolidate/discussions)
 
 ---
-
-**Note**: This tool logs commands after execution to avoid interfering with command behavior. It captures the command as run, including any shell expansions.
