@@ -9,11 +9,18 @@ $ConsolidateBin = if ($env:CONSOLIDATE_BIN) { $env:CONSOLIDATE_BIN } else { "con
 function Log-Command {
     param([string]$LastCommand, [int]$ExitCode, [string]$Cwd, [string]$SessionId)
 
+    # Debug logging
+    $debugFile = "$env:USERPROFILE\consolidate_debug.log"
+
     # Skip logging if command is empty
-    if ([string]::IsNullOrWhiteSpace($LastCommand)) { return }
+    if ([string]::IsNullOrWhiteSpace($LastCommand)) { 
+        return 
+    }
 
     # Skip logging consolidate commands to avoid recursion
-    if ($LastCommand -match '^(\./)?consolidate(\.exe)?') { return }
+    if ($LastCommand -match '^(\./)?consolidate(\.exe)?') { 
+        return 
+    }
 
     # Encode the command to avoid parsing issues
     $encodedCommand = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($LastCommand))
@@ -22,7 +29,7 @@ function Log-Command {
     try {
         & $ConsolidateBin log $encodedCommand --encoded --session $SessionId --cwd $Cwd --exit-code $ExitCode 2>$null
     } catch {
-        # Ignore errors
+        Add-Content $debugFile "Error executing log command: $_"
     }
 }
 
@@ -53,6 +60,9 @@ function prompt {
     } else {
         (Get-History -Count 1).CommandLine
     }
+    
+    # Debug
+    $debugFile = "$env:USERPROFILE\consolidate_debug.log"
     
     Log-Command -LastCommand $lastCommand -ExitCode $exitCode -Cwd (Get-Location).Path -SessionId $PID
 

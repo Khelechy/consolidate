@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"encoding/base64"
 	"fmt"
 	"os"
 	"strconv"
@@ -22,6 +23,15 @@ var logCmd = &cobra.Command{
 		cwd, _ := cmd.Flags().GetString("cwd")
 		exitCodeStr, _ := cmd.Flags().GetString("exit-code")
 		metadata, _ := cmd.Flags().GetString("metadata")
+		encoded, _ := cmd.Flags().GetBool("encoded")
+		if encoded {
+			decoded, err := base64.StdEncoding.DecodeString(command)
+			if err != nil {
+				fmt.Printf("Error decoding command: %v\n", err)
+				os.Exit(1)
+			}
+			command = string(decoded)
+		}
 
 		exitCode := 0
 		if exitCodeStr != "" {
@@ -60,4 +70,5 @@ func init() {
 	logCmd.Flags().String("cwd", "", "Current working directory")
 	logCmd.Flags().String("exit-code", "0", "Exit code")
 	logCmd.Flags().String("metadata", "", "Additional metadata")
+	logCmd.Flags().Bool("encoded", false, "Command is base64 encoded")
 }
