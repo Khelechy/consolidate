@@ -3,6 +3,8 @@ package storage
 import (
 	"database/sql"
 	"fmt"
+	"strings"
+	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -87,6 +89,51 @@ func SearchCommands(query string, limit int) ([]Command, error) {
 	}
 
 	return commands, nil
+}
+
+// CleanHistory removes commands from history based on datetime range or all commands
+func CleanHistory(fromTime, toTime *time.Time, all, dryRun bool) (int64, error) {
+	if db == nil {
+		return 0, fmt.Errorf("database not initialized")
+	}
+
+	var query string
+	var args []interface{}
+
+	if all {
+		query = "DELETE FROM commands"
+	} else if fromTime != nil && toTime != nil {
+		query = "DELETE FROM commands WHERE timestamp BETWEEN ? AND ?"
+		args = []interface{}{fromTime.Format(time.RFC3339), toTime.Format(time.RFC3339)}
+	} else if fromTime != nil {
+		query = "DELETE FROM commands WHERE timestamp >= ?"
+		args = []interface{}{fromTime.Format(time.RFC3339)}
+	} else if toTime != nil {
+		query = "DELETE FROM commands WHERE timestamp <= ?"
+		args = []interface{}{toTime.Format(time.RFC3339)}
+	} else {
+		return 0, fmt.Errorf("at least one datetime range must be specified or use --all flag")
+	}
+
+	if dryRun {
+		// For dry run, count instead of delete
+		var countQuery string
+		if all {
+			countQuery = "SELECT COUNT(*) FROM commands"
+		} else {
+			countQuery = strings.Replace(query, "DELETE FROM commands", "SELECT COUNT(*) FROM commands", 1)
+		}
+		var count int64
+		err := db.QueryRow(countQuery, args...).Scan(&count)
+		return count, err
+	}
+
+	result, err := db.Exec(query, args...)
+	if err != nil {
+		return 0, fmt.Errorf("failed to clean history: %w", err)
+	}
+
+	return result.RowsAffected()
 }
 
 // Command represents a stored command

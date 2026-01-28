@@ -12,6 +12,9 @@ function Log-Command {
     # Skip logging if command is empty
     if ([string]::IsNullOrWhiteSpace($LastCommand)) { return }
 
+    # Skip logging consolidate commands to avoid recursion
+    if ($LastCommand -match '^(\./)?consolidate(\.exe)?') { return }
+
     # Log the command
     try {
         & $ConsolidateBin log $LastCommand --session $SessionId --cwd $Cwd --exit-code $ExitCode 2>$null

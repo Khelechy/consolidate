@@ -5,15 +5,16 @@ Consolidate is a lightwieght cross-platform command-line utility that automatica
 ## Use Cases
 
 - **Developers**: Track and search through complex command sequences during development.
-- **System Administrators**: Maintain audit trails of commands executed on servers.
+- **System Administrators**: Maintain audit trails of commands executed on servers, with the ability to clean up old history.
 - **Data Scientists**: Log and retrieve analysis workflows and scripts.
-- **Anyone**: Never lose a useful command again; search through your entire command history.
+- **Anyone**: Never lose a useful command again; search through your entire command history and clean up when needed.
 
 ## Features
 
 - **Automatic Logging**: Hooks into bash, zsh, and PowerShell to capture commands after execution.
 - **Secure Storage**: Uses SQLite with optional encryption for sensitive data.
 - **Fast Search**: Full-text search through command history with regex-like queries.
+- **History Cleanup**: Remove old or unwanted commands with flexible date-based filtering or delete all history.
 - **Cross-Platform**: Works on Windows, Linux, and macOS.
 - **CLI Interface**: Simple commands for logging, searching, and managing history.
 - **JSON Export**: Export history for analysis or backup.
@@ -98,8 +99,7 @@ Install shell hooks, automatically detects your shell and installs hooks for com
 Displays all logged commands, ordered from recent to oldest.
 ```bash
 >> consolidate history
-```
-```bash
+
 >> consolidate history --json > history.json
 ```
 - Flags:
@@ -111,8 +111,7 @@ Displays all logged commands, ordered from recent to oldest.
 Searches for commands containing "git".
 ```bash
 >> consolidate search "git"
-```
-```bash
+
 >> consolidate search "docker.*build"
 ```
 #### `consolidate search [query]`
@@ -131,6 +130,32 @@ Manually log a command (useful for testing or scripting).
   - `--cwd string`: Current working directory
   - `--exit-code int`: Exit code (default 0)
   - `--metadata string`: Additional metadata
+
+
+#### Clean History
+Remove commands from history based on date ranges or delete all commands.
+```bash
+# Delete all commands from history
+>> consolidate clean --all
+
+# Delete commands from a specific date range
+>> consolidate clean --from 2023-01-01 --to 2023-12-31
+
+# Delete commands from a specific date onwards
+>> consolidate clean --from 2023-01-01
+
+# Delete commands up to a specific date
+>> consolidate clean --to 2023-12-31
+
+# Preview what would be deleted (dry run)
+>> consolidate clean --all --dry-run
+>> consolidate clean --from 2023-01-01 --dry-run
+```
+- Flags:
+  - `--all`: Delete all commands from history (cannot be used with --from or --to)
+  - `--from string`: Start datetime (RFC3339 or YYYY-MM-DD format, e.g., 2023-01-01 or 2023-01-01T00:00:00Z)
+  - `--to string`: End datetime (RFC3339 or YYYY-MM-DD format, e.g., 2023-12-31 or 2023-12-31T23:59:59Z)
+  - `--dry-run`: Show what would be deleted without actually deleting
 
 
 #### `consolidate help [command]`
