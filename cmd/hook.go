@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"embed"
 	"fmt"
 	"os"
 	"os/exec"
@@ -11,19 +12,36 @@ import (
 	"github.com/spf13/cobra"
 )
 
+//go:embed scripts
+var scripts embed.FS
+
 // hookCmd represents the hook command
 var hookCmd = &cobra.Command{
 	Use:   "hook",
 	Short: "Install shell hooks for automatic command logging",
 	Long:  `Automatically install the appropriate hook script for your shell to enable automatic command logging.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		// Read embedded scripts
+		hookShData, err := scripts.ReadFile("scripts/hook.sh")
+		if err != nil {
+			fmt.Printf("Error reading hook.sh: %v\n", err)
+			os.Exit(1)
+		}
+		hookSh := string(hookShData)
+
+		hookPs1Data, err := scripts.ReadFile("scripts/hook.ps1")
+		if err != nil {
+			fmt.Printf("Error reading hook.ps1: %v\n", err)
+			os.Exit(1)
+		}
+		hookPs1 := string(hookPs1Data)
+
 		// Get the executable path
 		execPath, err := os.Executable()
 		if err != nil {
 			fmt.Printf("Error getting executable path: %v\n", err)
 			os.Exit(1)
 		}
-		execDir := filepath.Dir(execPath)
 
 		// Detect shell
 		shell := common.DetectShell()
@@ -38,7 +56,18 @@ var hookCmd = &cobra.Command{
 			} else {
 				profilePath = filepath.Join(homeDir, ".bashrc")
 			}
-			hookLine = fmt.Sprintf("export CONSOLIDATE_BIN='%s'; source %s/scripts/hook.sh", execPath, execDir)
+			configDir := filepath.Join(homeDir, ".consolidate")
+			if err := os.MkdirAll(configDir, 0755); err != nil {
+				fmt.Printf("Error creating config directory: %v\n", err)
+				os.Exit(1)
+			}
+			hookScriptPath := filepath.Join(configDir, ".consolidate_hook.sh")
+			err = os.WriteFile(hookScriptPath, []byte(hookSh), 0644)
+			if err != nil {
+				fmt.Printf("Error writing hook script: %v\n", err)
+				os.Exit(1)
+			}
+			hookLine = fmt.Sprintf("export CONSOLIDATE_BIN='%s'; source %s", execPath, hookScriptPath)
 		case "powershell":
 			// For PowerShell, get the profile path
 			cmd := exec.Command("powershell", "-Command", "$PROFILE")
@@ -48,7 +77,19 @@ var hookCmd = &cobra.Command{
 				os.Exit(1)
 			}
 			profilePath = strings.TrimSpace(string(output))
-			hookLine = fmt.Sprintf("$env:CONSOLIDATE_BIN='%s'; . %s/scripts/hook.ps1", execPath, execDir)
+			homeDir, _ := os.UserHomeDir()
+			configDir := filepath.Join(homeDir, ".consolidate")
+			if err := os.MkdirAll(configDir, 0755); err != nil {
+				fmt.Printf("Error creating config directory: %v\n", err)
+				os.Exit(1)
+			}
+			hookScriptPath := filepath.Join(configDir, ".consolidate_hook.ps1")
+			err = os.WriteFile(hookScriptPath, []byte(hookPs1), 0644)
+			if err != nil {
+				fmt.Printf("Error writing hook script: %v\n", err)
+				os.Exit(1)
+			}
+			hookLine = fmt.Sprintf("$env:CONSOLIDATE_BIN='%s'; . %s", execPath, hookScriptPath)
 		default:
 			fmt.Printf("Unsupported shell: %s\n", shell)
 			os.Exit(1)
