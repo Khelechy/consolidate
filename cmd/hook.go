@@ -83,6 +83,7 @@ var hookCmd = &cobra.Command{
 				fmt.Printf("Error creating config directory: %v\n", err)
 				os.Exit(1)
 			}
+			
 			hookScriptPath := filepath.Join(configDir, ".consolidate_hook.ps1")
 			err = os.WriteFile(hookScriptPath, []byte(hookPs1), 0644)
 			if err != nil {
