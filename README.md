@@ -6,7 +6,6 @@ Consolidate is a lightwieght cross-platform command-line utility that automatica
 
 - **Developers**: Track and search through complex command sequences during development.
 - **System Administrators**: Maintain audit trails of commands executed on servers, with the ability to clean up old history.
-- **Data Scientists**: Log and retrieve analysis workflows and scripts.
 - **Anyone**: Never lose a useful command again; search through your entire command history and clean up when needed.
 
 ## Features
