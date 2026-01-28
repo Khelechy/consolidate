@@ -29,7 +29,8 @@ _log_command() {
     [[ "$last_command" =~ ^(\./)?consolidate(\.exe)? ]] && return
 
     # Log the command
-    $CONSOLIDATE_BIN log "$last_command" --session "$session_id" --cwd "$cwd" --exit-code "$exit_code" 2>/dev/null || true
+    encoded_command=$(echo -n "$last_command" | base64)
+    $CONSOLIDATE_BIN log "$encoded_command" --encoded --session "$session_id" --cwd "$cwd" --exit-code "$exit_code" 2>/dev/null || true
 }
 
 # Set up the hook

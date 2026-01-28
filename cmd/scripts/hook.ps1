@@ -9,17 +9,27 @@ $ConsolidateBin = if ($env:CONSOLIDATE_BIN) { $env:CONSOLIDATE_BIN } else { "con
 function Log-Command {
     param([string]$LastCommand, [int]$ExitCode, [string]$Cwd, [string]$SessionId)
 
+    # Debug logging
+    $debugFile = "$env:USERPROFILE\consolidate_debug.log"
+
     # Skip logging if command is empty
-    if ([string]::IsNullOrWhiteSpace($LastCommand)) { return }
+    if ([string]::IsNullOrWhiteSpace($LastCommand)) { 
+        return 
+    }
 
     # Skip logging consolidate commands to avoid recursion
-    if ($LastCommand -match '^(\./)?consolidate(\.exe)?') { return }
+    if ($LastCommand -match '^(\./)?consolidate(\.exe)?') { 
+        return 
+    }
+
+    # Encode the command to avoid parsing issues
+    $encodedCommand = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($LastCommand))
 
     # Log the command
     try {
-        & $ConsolidateBin log $LastCommand --session $SessionId --cwd $Cwd --exit-code $ExitCode 2>$null
+        & $ConsolidateBin log $encodedCommand --encoded --session $SessionId --cwd $Cwd --exit-code $ExitCode 2>$null
     } catch {
-        # Ignore errors
+        Add-Content $debugFile "Error executing log command: $_"
     }
 }
 
@@ -39,7 +49,22 @@ function prompt {
     } else {
         $exitCode = 1
     }
-    Log-Command -LastCommand $((Get-History -Count 1).CommandLine) -ExitCode $exitCode -Cwd (Get-Location).Path -SessionId $PID
+    
+    # Get the last command, preferring PSReadLine for full command text
+    $lastCommand = if (Get-Module PSReadLine -ErrorAction SilentlyContinue) {
+        try {
+            [Microsoft.PowerShell.PSConsoleReadLine]::GetHistoryItems() | Select-Object -Last 1 -ExpandProperty CommandLine
+        } catch {
+            (Get-History -Count 1).CommandLine
+        }
+    } else {
+        (Get-History -Count 1).CommandLine
+    }
+    
+    # Debug
+    $debugFile = "$env:USERPROFILE\consolidate_debug.log"
+    
+    Log-Command -LastCommand $lastCommand -ExitCode $exitCode -Cwd (Get-Location).Path -SessionId $PID
 
     # Call original prompt
     & $originalPrompt
