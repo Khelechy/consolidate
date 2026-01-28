@@ -15,9 +15,12 @@ function Log-Command {
     # Skip logging consolidate commands to avoid recursion
     if ($LastCommand -match '^(\./)?consolidate(\.exe)?') { return }
 
+    # Encode the command to avoid parsing issues
+    $encodedCommand = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($LastCommand))
+
     # Log the command
     try {
-        & $ConsolidateBin log $LastCommand --session $SessionId --cwd $Cwd --exit-code $ExitCode 2>$null
+        & $ConsolidateBin log $encodedCommand --encoded --session $SessionId --cwd $Cwd --exit-code $ExitCode 2>$null
     } catch {
         # Ignore errors
     }
