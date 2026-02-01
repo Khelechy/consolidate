@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/khelechy/consolidate/internal/storage"
 )
@@ -66,11 +67,21 @@ func DetectShell() string {
 		return "bash"
 	}
 
-	// Check parent process or PSModulePath for PowerShell
+	// Fallback to SHELL environment variable
+	shellPath := os.Getenv("SHELL")
+	if strings.Contains(shellPath, "zsh") {
+		return "zsh"
+	}
+	if strings.Contains(shellPath, "bash") {
+		return "bash"
+	}
+
+	// Check for Windows shells
 	if os.Getenv("OS") == "Windows_NT" {
-		if psModulePath := os.Getenv("PSModulePath"); psModulePath != "" {
+		if os.Getenv("PROMPT") == "" && os.Getenv("PSModulePath") != "" {
 			return "powershell"
 		}
+		return "cmd"
 	}
 
 	// Default to bash

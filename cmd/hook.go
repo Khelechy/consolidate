@@ -62,7 +62,9 @@ var hookCmd = &cobra.Command{
 				os.Exit(1)
 			}
 			hookScriptPath := filepath.Join(configDir, ".consolidate_hook.sh")
-			err = os.WriteFile(hookScriptPath, []byte(hookSh), 0644)
+			// Normalize line endings to Unix (LF) to avoid issues on Unix systems
+			normalizedHookSh := strings.ReplaceAll(hookSh, "\r\n", "\n")
+			err = os.WriteFile(hookScriptPath, []byte(normalizedHookSh), 0644)
 			if err != nil {
 				fmt.Printf("Error writing hook script: %v\n", err)
 				os.Exit(1)
@@ -83,7 +85,7 @@ var hookCmd = &cobra.Command{
 				fmt.Printf("Error creating config directory: %v\n", err)
 				os.Exit(1)
 			}
-			
+
 			hookScriptPath := filepath.Join(configDir, ".consolidate_hook.ps1")
 			err = os.WriteFile(hookScriptPath, []byte(hookPs1), 0644)
 			if err != nil {
@@ -91,6 +93,11 @@ var hookCmd = &cobra.Command{
 				os.Exit(1)
 			}
 			hookLine = fmt.Sprintf("$env:CONSOLIDATE_BIN='%s'; . %s", execPath, hookScriptPath)
+		case "cmd":
+			fmt.Printf("Windows Command Prompt (CMD) does not support automatic command logging hooks like other shells.\n")
+			fmt.Printf("Please use PowerShell, WSL, or another Unix-like shell for automatic logging.\n")
+			fmt.Printf("You can manually log commands using: consolidate log \"your command\"\n")
+			os.Exit(1)
 		default:
 			fmt.Printf("Unsupported shell: %s\n", shell)
 			os.Exit(1)
