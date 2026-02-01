@@ -16,7 +16,7 @@ _log_command() {
     # Get the last command from history
     local last_command
     if [[ -n "$ZSH_VERSION" ]]; then
-        last_command="${history[$HISTCMD]}"
+        last_command="$_consolidate_last_command"
     else
         last_command=$(fc -ln -1 2>/dev/null | sed 's/^[[:space:]]*[0-9]*[[:space:]]*//')
     fi
@@ -33,11 +33,17 @@ _log_command() {
     $CONSOLIDATE_BIN log "$encoded_command" --encoded --session "$session_id" --cwd "$cwd" --exit-code "$exit_code" 2>/dev/null || true
 }
 
+# Function to capture command before execution (for zsh)
+_capture_command() {
+    _consolidate_last_command="$1"
+}
+
 # Set up the hook
 if [[ -n "$ZSH_VERSION" ]]; then
     # Zsh
     autoload -Uz add-zsh-hook
     add-zsh-hook precmd _log_command
+    add-zsh-hook preexec _capture_command
 elif [[ -n "$BASH_VERSION" ]]; then
     # Bash
     PROMPT_COMMAND="_log_command"
