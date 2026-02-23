@@ -1,6 +1,6 @@
 # Consolidate
 
-Consolidate is a lightwieght cross-platform command-line utility that automatically logs every command you run in your terminal, providing a searchable and persistent history. Unlike built-in shell history, Consolidate works across different shells and sessions, with advanced search capabilities and secure storage.
+Consolidate is a lightweight cross-platform command-line utility that automatically logs every command you run in your terminal, providing a searchable and persistent history. Unlike built-in shell history, Consolidate works across different shells and sessions, with advanced search capabilities and secure storage.
 
 ## Use Cases
 
