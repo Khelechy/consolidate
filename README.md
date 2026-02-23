@@ -51,12 +51,14 @@ This will download, build, and install consolidate to your `$GOPATH/bin` or `$GO
 ### Option 3: Build from Source
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/khelechy/consolidate.git
    cd consolidate
    ```
 
 2. Build the binary:
+
    ```bash
    CGO_ENABLED=1 go build -o consolidate
    ```
@@ -69,11 +71,13 @@ This will download, build, and install consolidate to your `$GOPATH/bin` or `$GO
 ### Setup
 
 1. Initialize the database:
+
    ```bash
    >> consolidate init
    ```
 
 2. Install shell hooks for automatic logging:
+
    ```bash
    >> consolidate hook
    ```
@@ -85,59 +89,71 @@ This will download, build, and install consolidate to your `$GOPATH/bin` or `$GO
 ### Basic Commands
 
 #### Initialize Consolidate
+
 Initialize the database and configuration.
+
 ```bash
 >> consolidate init
 ```
+
 Sets up the database and configuration files.
 
-
 #### Install Hooks
+
 Install shell hooks, automatically detects your shell and installs hooks for command logging.
+
 ```bash
 >> consolidate hook
 ```
 
-
 #### View History
+
 Displays all logged commands, ordered from recent to oldest.
+
 ```bash
 >> consolidate history
 
 >> consolidate history --json > history.json
 ```
+
 - Flags:
   - `--limit int`: Maximum commands (default 100)
   - `--json`: Output in JSON format
 
-
 #### Search History
+
 Searches for commands containing "git".
+
 ```bash
 >> consolidate search "git"
 
 >> consolidate search "docker.*build"
 ```
+
 #### `consolidate search [query]`
+
 - Flags:
   - `--limit int`: Maximum results (default 10)
   - `--json`: Output in JSON format
 
-
 #### Manual Logging
+
 Manually log a command (useful for testing or scripting).
+
 ```bash
 >> consolidate log "echo hello world" --session mysession --cwd /home/user
 ```
+
 - Flags:
   - `--session string`: Session ID
   - `--cwd string`: Current working directory
   - `--exit-code int`: Exit code (default 0)
   - `--metadata string`: Additional metadata
 
-
 #### Clean History
+
 Remove commands from history based on date ranges or delete all commands.
+
 ```bash
 # Delete all commands from history
 >> consolidate clean --all
@@ -155,20 +171,21 @@ Remove commands from history based on date ranges or delete all commands.
 >> consolidate clean --all --dry-run
 >> consolidate clean --from 2023-01-01 --dry-run
 ```
+
 - Flags:
   - `--all`: Delete all commands from history (cannot be used with --from or --to)
   - `--from string`: Start datetime (RFC3339 or YYYY-MM-DD format, e.g., 2023-01-01 or 2023-01-01T00:00:00Z)
   - `--to string`: End datetime (RFC3339 or YYYY-MM-DD format, e.g., 2023-12-31 or 2023-12-31T23:59:59Z)
   - `--dry-run`: Show what would be deleted without actually deleting
 
-
 #### `consolidate help [command]`
-Get help for any command.
 
+Get help for any command.
 
 ## Configuration
 
 Consolidate stores data in `~/.consolidate/`:
+
 - `history.db`: SQLite database with command history
 - Configuration is minimal; most settings are command-line flags
 
@@ -181,16 +198,27 @@ Consolidate stores data in `~/.consolidate/`:
 ## Troubleshooting
 
 ### Hooks Not Working
+
 - Ensure you've run `consolidate hook` and restarted your shell.
 - Check that the hook script is sourced in your shell profile.
 
 ### Database Errors
+
 - Run `consolidate init` to recreate the database.
 - Ensure write permissions in `~/.consolidate/`.
 
 ### Commands Not Logging
+
 - Verify hooks are installed: `consolidate hook`
 - Check for errors in your shell after running commands.
+
+### Windows-Specific Issues
+
+If you have `CGO_ENABLED=1` in your Windows environment and still encounter issues, ensure you have the necessary C compiler and SQLite development libraries installed.
+
+- You may need to install a tool like [MSYS2](https://www.msys2.org/).
+- Then run this command `pacman -S mingw-w64-ucrt-x86_64-gcc` and hit `Y` when prompted to install the package.
+- Next is to to tell Windows where this new compiler lives. You can do this by adding the following path to your system's `PATH` environment variable: `C:\msys64\mingw64\bin`. After updating your `PATH`, restart your terminal and try running `consolidate` again.
 
 ## Contributing
 
