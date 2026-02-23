@@ -26,16 +26,21 @@ Consolidate is a lightwieght cross-platform command-line utility that automatica
 ### Prerequisites
 
 - Go 1.19 or later
+- CGO must be enabled (required for SQLite database support)
+  - On most systems, CGO is enabled by default
+  - If you encounter SQLite-related errors, ensure `CGO_ENABLED=1` is set in your environment
 
 ### Option 1: Go Install (Recommended)
 
 Install directly from the repository:
 
 ```bash
-go install github.com/khelechy/consolidate@latest
+CGO_ENABLED=1 go install github.com/khelechy/consolidate@latest
 ```
 
 This will download, build, and install consolidate to your `$GOPATH/bin` or `$GOBIN`.
+
+**Note**: The `CGO_ENABLED=1` environment variable ensures SQLite database support is properly compiled.
 
 ### Option 2: Download Pre-built Binary
 
@@ -53,7 +58,7 @@ This will download, build, and install consolidate to your `$GOPATH/bin` or `$GO
 
 2. Build the binary:
    ```bash
-   go build -o consolidate
+   CGO_ENABLED=1 go build -o consolidate
    ```
 
 3. (Optional) Install to system PATH:
